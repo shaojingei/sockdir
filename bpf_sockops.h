@@ -46,10 +46,10 @@
 
 #define pod_num 3
 #ifdef pod_num
-#define pod_productpage_ip 0x1e00f40a
-#define pod_details_ip 0x1900f40a
-#define pod_reviews_v3_ip 0x1d00f40a
-#define pod_rating_ip 0x1a00f40a
+#define pod_productpage_ip 0x3000f40a
+#define pod_details_ip 0x2c00f40a
+#define pod_reviews_v3_ip 0x3200f40a
+#define pod_rating_ip 0x2e00f40a
 #endif
 
 /* ebpf helper function
@@ -61,7 +61,7 @@ static int BPF_FUNC(msg_redirect_hash, struct sk_msg_md *md,
 static int BPF_FUNC(sock_hash_update, struct bpf_sock_ops *skops,
 			void *map, void *key, uint64_t flags);
 static void BPF_FUNC(trace_printk, const char *fmt, int fmt_size, ...);
-
+static void BPF_FUNC(map_lookup_elem, struct bpf_map *map, void *key);
 /*
  * Map definition
  */
