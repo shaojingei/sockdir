@@ -44,13 +44,22 @@
     })
 #endif
 
-#define pod_num 3
-#ifdef pod_num
-#define pod_productpage_ip 0x3000f40a
-#define pod_details_ip 0x2c00f40a
-#define pod_reviews_v3_ip 0x3200f40a
-#define pod_rating_ip 0x2e00f40a
-#endif
+
+#define pod_productpage_ip_1 0x5400f40a
+#define pod_productpage_ip_2 0x5500f40a
+#define pod_productpage_ip_3 0x5600f40a
+
+#define pod_details_ip_1 0x4900f40a
+#define pod_details_ip_2 0x4a00f40a
+#define pod_details_ip_3 0x4b00f40a
+
+#define pod_reviews_v3_ip_1 0x5100f40a
+#define pod_reviews_v3_ip_2 0x5200f40a
+#define pod_reviews_v3_ip_3 0x5300f40a
+
+#define pod_rating_ip_1 0x4c00f40a
+#define pod_rating_ip_2 0x4f00f40a
+#define pod_rating_ip_3 0x5000f40a
 
 /* ebpf helper function
  * The generated function is used for parameter verification
@@ -61,7 +70,7 @@ static int BPF_FUNC(msg_redirect_hash, struct sk_msg_md *md,
 static int BPF_FUNC(sock_hash_update, struct bpf_sock_ops *skops,
 			void *map, void *key, uint64_t flags);
 static void BPF_FUNC(trace_printk, const char *fmt, int fmt_size, ...);
-static void BPF_FUNC(map_lookup_elem, struct bpf_map *map, void *key);
+
 /*
  * Map definition
  */
@@ -110,7 +119,19 @@ struct bpf_map_def __section("maps") sock_ops_map = {
 static inline
 int podip_verify(uint32_t local_ip)
 {
-    if (local_ip == pod_productpage_ip || local_ip ==pod_details_ip || local_ip == pod_rating_ip || local_ip == pod_reviews_v3_ip){
+    if (local_ip == pod_productpage_ip_1 ||
+        local_ip == pod_productpage_ip_2 ||
+        local_ip == pod_productpage_ip_3 ||
+        local_ip == pod_details_ip_1 ||
+        local_ip == pod_details_ip_2 ||
+        local_ip == pod_details_ip_3 ||
+        local_ip == pod_rating_ip_1 ||
+        local_ip == pod_rating_ip_2 ||
+        local_ip == pod_rating_ip_3 ||
+        local_ip == pod_reviews_v3_ip_1 ||
+        local_ip == pod_reviews_v3_ip_2 ||
+        local_ip == pod_reviews_v3_ip_3
+        ){
         return 1;
     }
     return 0;

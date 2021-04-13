@@ -1,6 +1,7 @@
 #include <uapi/linux/bpf.h>
 #include "bpf_sockops.h"
 
+
 /*
  * extract the key identifying the socket source of the TCP event 
  */
@@ -53,9 +54,6 @@ void inboound_sock_ops_ipv4(struct bpf_sock_ops *skops)
 
 	if (ret != 0) {
 		printk("FAILED: sock_hash_update ret: %d\n", ret);
-	} else{
-        printk("SUCCESS! inbound sock_hash_update! local_port:%d--->remote_port:%d\n",
-               key.sport, key.dport);
 	}
 }
 
@@ -74,9 +72,6 @@ void outboound_sock_ops_ipv4(struct bpf_sock_ops *skops)
 
     if (ret != 0) {
         printk("FAILED: sock_hash_update ret: %d\n", ret);
-    } else{
-        printk("SUCCESS! outbound sock_hash_update! local_port:%d--->remote_port:%d\n",
-               key.sport, key.dport);
     }
 }
 
@@ -95,22 +90,18 @@ int bpf_sockops_v4(struct bpf_sock_ops *skops)
         case BPF_SOCK_OPS_ACTIVE_ESTABLISHED_CB:
 		if (family == 2) { //AF_INET
 		    //Inbound traffic
-            if (skops->local_ip4 == 0x100007f && skops->remote_ip4 == 0x100007f){
+            if (skops->local_ip4 == 0x100007f && skops->remote_ip4 ==0x100007f){
                 if (skops->local_port == 9080 || bpf_ntohl(skops->remote_port) == 9080){
                     inboound_sock_ops_ipv4(skops);
                 }
             }
-            //Outbound traffic, two cases: svc_pod send endpoint && envoy_listen endpoint
-            //iptables,send endpoint
+            //Outbound traffic
+            //iptables
             if (podip_verify(skops->local_ip4) && bpf_ntohl(skops->remote_port) == 9080){
                 outboound_sock_ops_ipv4(skops);
             }
-            //normal,envoy_listen endpoint
+            //normal
             if (skops->local_ip4 == 0x100007f && skops->local_port == 15001){
-                inboound_sock_ops_ipv4(skops);
-            }
-            //pod to pod in same host
-            if (skops->local == 15006){
                 inboound_sock_ops_ipv4(skops);
             }
 		}
